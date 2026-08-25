@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS Grid Generator</title>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --card: #ffffff;
+        --panel: #f8f9fb;
+        --line: #e8edf5;
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --soft-blue: #eaf2ff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .topbar {
+        background: #fff;
+        border-bottom: 1px solid var(--line);
+        padding: 14px 28px;
+      }
+
+      .topbar-inner {
+        max-width: 1240px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+        color: var(--text);
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .brand-logo {
+        width: 112px;
+        height: auto;
+        flex: 0 0 auto;
+        display: block;
+      }
+
+      .page {
+        max-width: 1240px;
+        margin: 20px auto 40px;
+        padding: 0 18px;
+      }
+
+      .card {
+        overflow: hidden;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        box-shadow: 0 6px 18px rgba(17, 24, 39, 0.04);
+      }
+
+      .card-header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 16px;
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+      h1 {
+        margin-bottom: 0;
+        font-size: 1.15rem;
+      }
+      h2 {
+        font-size: 0.9rem;
+      }
+      h3 {
+        margin-bottom: 4px;
+        font-size: 0.82rem;
+      }
+
+      .header-actions,
+      .button-row,
+      .input-group {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: max-content;
+        align-items: center;
+        gap: 8px;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        background: #fff;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+
+      button:hover {
+        border-color: #93c5fd;
+        background: var(--soft-blue);
+        color: var(--primary-dark);
+      }
+
+      button.primary {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+      }
+
+      button.primary:hover {
+        background: var(--primary-dark);
+        color: #fff;
+      }
+
+      .card-body {
+        padding: 18px;
+      }
+
+      .description {
+        margin-bottom: 18px;
+        color: var(--muted);
+        font-size: 0.85rem;
+        line-height: 1.5;
+      }
+
+      .generator {
+        display: grid;
+        grid-template-columns: minmax(260px, 1fr) minmax(0, 3fr);
+        gap: 18px;
+        align-items: start;
+      }
+
+      .preview-panel,
+      .controls-panel,
+      .code-panel {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+      }
+
+      .panel-heading {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      .preview-area {
+        padding: 14px;
+      }
+
+      .grid-stage {
+        min-height: 520px;
+        display: grid;
+        place-items: center;
+        padding: 14px;
+        border: 1px solid #dfeafb;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #edf5ff, #f7fbff);
+      }
+
+      .grid-preview-shell {
+        position: relative;
+        width: 100%;
+        height: 480px;
+      }
+
+      #grid-interactive {
+        width: 100%;
+        height: 480px;
+        display: grid;
+        gap: 12px;
+        padding: 12px;
+        border: 2px dashed #7caafe;
+        border-radius: 10px;
+        background: #dfeeff;
+      }
+
+      .grid-guides {
+        position: absolute;
+        inset: 14px;
+        z-index: 2;
+        display: grid;
+        pointer-events: none;
+      }
+
+      .grid-guide-cell {
+        position: relative;
+        border: 1px dashed rgba(37, 99, 235, 0.38);
+      }
+
+      .grid-line-number {
+        position: absolute;
+        z-index: 3;
+        min-width: 16px;
+        padding: 1px 3px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--primary-dark);
+        font-size: 0.62rem;
+        font-weight: 700;
+        line-height: 1.2;
+        text-align: center;
+      }
+
+      .column-line-number {
+        top: -1px;
+        left: 2px;
+        transform: translateY(-100%);
+      }
+
+      .row-line-number {
+        top: 2px;
+        left: -1px;
+        transform: translateX(-100%);
+      }
+
+      .column-end-line-number {
+        top: -1px;
+        right: 2px;
+        transform: translateY(-100%);
+      }
+
+      .row-end-line-number {
+        left: -1px;
+        bottom: 2px;
+        transform: translate(-100%, 100%);
+      }
+
+      .grid-item {
+        display: grid;
+        place-items: center;
+        min-width: 0;
+        min-height: 0;
+        border: 2px solid transparent;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #2563eb, #60a5fa);
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .grid-item.dragging {
+        opacity: 0.45;
+      }
+
+      #grid-interactive.drag-over {
+        outline: 3px solid rgba(37, 99, 235, 0.28);
+        outline-offset: 3px;
+      }
+
+      .grid-item:nth-child(2) {
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+      }
+      .grid-item:nth-child(3) {
+        background: linear-gradient(135deg, #10b981, #34d399);
+      }
+      .grid-item:nth-child(4) {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      }
+      .grid-item:nth-child(5) {
+        background: linear-gradient(135deg, #a855f7, #d946ef);
+      }
+      .grid-item.selected {
+        border-color: #111827;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+      }
+
+      .controls-panel {
+        grid-column: 1;
+        grid-row: 1;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        padding: 14px;
+        position: sticky;
+        top: 18px;
+      }
+
+      .grid-legend {
+        margin: 0 0 14px;
+        padding: 8px 10px 9px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--panel);
+        color: var(--muted);
+        font-size: 0.68rem;
+        line-height: 1.4;
+      }
+
+      .grid-legend legend {
+        padding: 0 4px;
+        color: var(--text);
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      .grid-legend p {
+        margin: 3px 0 0;
+      }
+      .grid-legend strong {
+        color: var(--primary-dark);
+      }
+
+      .preview-panel {
+        grid-column: 2;
+        grid-row: 1;
+        position: sticky;
+        top: 18px;
+      }
+
+      .control-section {
+        padding-bottom: 14px;
+        margin-bottom: 14px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .control-section:last-child {
+        padding-bottom: 0;
+        margin-bottom: 0;
+        border-bottom: 0;
+      }
+
+      .control-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--text);
+        font-size: 0.74rem;
+        font-weight: 700;
+      }
+
+      input,
+      select {
+        width: 100%;
+        min-height: 32px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 6px 8px;
+        background: #fff;
+        color: var(--text);
+        font-size: 0.78rem;
+      }
+
+      .help-text {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 0.68rem;
+      }
+
+      .selected-item {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 5px;
+        margin-top: 8px;
+      }
+
+      .selected-item button {
+        padding: 6px 4px;
+        font-size: 0.7rem;
+      }
+      .selected-item button.selected {
+        background: var(--soft-blue);
+        border-color: #93c5fd;
+        color: var(--primary-dark);
+      }
+
+      .code-panel {
+        margin: 18px 14px 14px;
+      }
+
+      pre {
+        margin: 0;
+        max-height: 260px;
+        overflow: auto;
+        padding: 14px;
+        background: #101827;
+        color: #e5eeff;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 0.78rem;
+        line-height: 1.55;
+      }
+
+      @media (max-width: 900px) {
+        .generator {
+          grid-template-columns: 1fr;
+        }
+        .controls-panel,
+        .preview-panel {
+          grid-column: auto;
+          grid-row: auto;
+          max-height: none;
+          overflow: visible;
+          position: static;
+        }
+        .card-header {
+          grid-template-columns: 1fr;
+        }
+        .header-actions {
+          grid-auto-flow: row;
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .header-actions button {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .topbar {
+          padding: 12px 14px;
+        }
+
+        .brand {
+          gap: 8px;
+          font-size: 0.78rem;
+        }
+
+        .brand-logo {
+          width: 88px;
+        }
+
+        .page {
+          margin-top: 10px;
+          padding: 0 10px;
+        }
+        .card-body {
+          padding: 12px;
+        }
+        .control-grid {
+          grid-template-columns: 1fr;
+        }
+        .grid-stage {
+          min-height: 400px;
+        }
+        .grid-preview-shell,
+        #grid-interactive {
+          height: 360px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <img
+            class="brand-logo"
+            src="https://www.nyp.edu.sg/content/dam/nypcorp/sg/en/common/logo-nyp.svg"
+            alt="Nanyang Polytechnic"
+          />
+          <span>EG2E14 - CSS Grid Generator</span>
+        </div>
+        <!-- <div class="crumbs">
+        <span>Home</span>
+        <span>›</span>
+        <span>CSS Generators</span>
+        <span>›</span>
+        <span>CSS Flexbox Generator</span>
+      </div> -->
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="card">
+        <header class="card-header">
+          <h1>CSS Grid Generator</h1>
+          <div class="header-actions">
+            <button type="button" id="addItemButton">Add Div</button>
+            <button type="button" id="removeItemButton">Remove Div</button>
+            <button type="button" id="resetButton">Reset</button>
+            <button type="button" id="copyButton">Copy CSS</button>
+          </div>
+        </header>
+
+        <div class="card-body">
+          <p class="description">
+            Create a CSS Grid layout by changing rows, columns, gaps, alignment,
+            and individual item placement. Click an item to edit it or drag it
+            to another grid cell.
+          </p>
+
+          <div class="generator">
+            <section class="preview-panel">
+              <div class="panel-heading">CSS Grid Options / Preview</div>
+              <div class="preview-area">
+                <div class="grid-stage">
+                  <div class="grid-preview-shell">
+                    <div id="grid-interactive"></div>
+                    <div
+                      class="grid-guides"
+                      id="gridGuides"
+                      aria-hidden="true"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <section class="code-panel">
+                <div class="panel-heading">Generated CSS</div>
+                <pre id="cssOutput"></pre>
+              </section>
+            </section>
+
+            <aside class="controls-panel">
+              <fieldset class="grid-legend">
+                <legend>Grid reference</legend>
+                <p>
+                  <strong>Rows</strong> run horizontally;
+                  <strong>columns</strong> run vertically.
+                </p>
+                <p>
+                  <strong>Grid lines</strong> define boundaries. A
+                  <strong>cell</strong> is one row-column space.
+                </p>
+                <p>
+                  <strong>Tracks</strong> are row or column sizes, such as
+                  <strong>1fr</strong> or <strong>100px</strong>.
+                </p>
+              </fieldset>
+
+              <div class="control-section">
+                <h2>Grid Options</h2>
+                <div class="control-grid">
+                  <div>
+                    <label for="gridRows">Rows</label>
+                    <input
+                      id="gridRows"
+                      type="number"
+                      min="1"
+                      max="12"
+                      value="2"
+                    />
+                  </div>
+                  <div>
+                    <label for="gridColumns">Columns</label>
+                    <input
+                      id="gridColumns"
+                      type="number"
+                      min="1"
+                      max="12"
+                      value="4"
+                    />
+                  </div>
+                  <div>
+                    <label for="rowGap">Row Gap (px)</label>
+                    <input
+                      id="rowGap"
+                      type="number"
+                      min="0"
+                      max="100"
+                      value="12"
+                    />
+                  </div>
+                  <div>
+                    <label for="columnGap">Column Gap (px)</label>
+                    <input
+                      id="columnGap"
+                      type="number"
+                      min="0"
+                      max="100"
+                      value="12"
+                    />
+                  </div>
+                </div>
+                <div class="control-grid" style="margin-top: 10px">
+                  <div>
+                    <label for="rowTracks">Row track sizes</label>
+                    <input
+                      id="rowTracks"
+                      type="text"
+                      value="1fr 1fr"
+                      placeholder="1fr 100px 2fr"
+                    />
+                    <span class="help-text">Example: 1fr 100px 2fr</span>
+                  </div>
+                  <div>
+                    <label for="columnTracks">Column track sizes</label>
+                    <input
+                      id="columnTracks"
+                      type="text"
+                      value="1fr 1fr 1fr 1fr"
+                      placeholder="1fr 1fr 200px"
+                    />
+                    <span class="help-text">Example: 1fr 1fr 200px</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="control-section">
+                <h2>Grid Alignment</h2>
+                <div class="control-grid">
+                  <div>
+                    <label for="justifyItems">Default justify-items</label>
+                    <select id="justifyItems">
+                      <option>stretch</option>
+                      <option>start</option>
+                      <option>end</option>
+                      <option>center</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="alignItems">Default align-items</label>
+                    <select id="alignItems">
+                      <option>stretch</option>
+                      <option>start</option>
+                      <option>end</option>
+                      <option>center</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="justifyContent">justify-content</label>
+                    <select id="justifyContent">
+                      <option>start</option>
+                      <option>end</option>
+                      <option>center</option>
+                      <option>space-around</option>
+                      <option>space-between</option>
+                      <option>space-evenly</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="alignContent">align-content</label>
+                    <select id="alignContent">
+                      <option>start</option>
+                      <option>end</option>
+                      <option>center</option>
+                      <option>space-around</option>
+                      <option>space-between</option>
+                      <option>space-evenly</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="control-section">
+                <h2>Selected Grid Item</h2>
+                <label for="itemId">Item ID</label>
+                <input id="itemId" type="text" value="item1" />
+                <div class="selected-item" id="itemPicker"></div>
+                <div class="control-grid" style="margin-top: 10px">
+                  <div>
+                    <label for="rowStart">Row start</label
+                    ><input id="rowStart" type="number" min="1" value="1" />
+                  </div>
+                  <div>
+                    <label for="rowEnd">Row end</label
+                    ><input id="rowEnd" type="number" min="2" value="2" />
+                  </div>
+                  <div>
+                    <label for="columnStart">Column start</label
+                    ><input id="columnStart" type="number" min="1" value="1" />
+                  </div>
+                  <div>
+                    <label for="columnEnd">Column end</label
+                    ><input id="columnEnd" type="number" min="2" value="2" />
+                  </div>
+                  <div>
+                    <label for="justifySelf">justify-self</label
+                    ><select id="justifySelf">
+                      <option>stretch</option>
+                      <option>start</option>
+                      <option>end</option>
+                      <option>center</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="alignSelf">align-self</label
+                    ><select id="alignSelf">
+                      <option>stretch</option>
+                      <option>start</option>
+                      <option>end</option>
+                      <option>center</option>
+                      <option>baseline</option>
+                    </select>
+                  </div>
+                </div>
+                <span class="help-text"
+                  >Use row and column lines to position or span the selected
+                  item. Alignment is set independently.</span
+                >
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const grid = document.getElementById("grid-interactive");
+      const gridGuides = document.getElementById("gridGuides");
+      const cssOutput = document.getElementById("cssOutput");
+      const itemPicker = document.getElementById("itemPicker");
+      const controls = {
+        rows: document.getElementById("gridRows"),
+        columns: document.getElementById("gridColumns"),
+        rowGap: document.getElementById("rowGap"),
+        columnGap: document.getElementById("columnGap"),
+        rowTracks: document.getElementById("rowTracks"),
+        columnTracks: document.getElementById("columnTracks"),
+        justifyItems: document.getElementById("justifyItems"),
+        alignItems: document.getElementById("alignItems"),
+        justifyContent: document.getElementById("justifyContent"),
+        alignContent: document.getElementById("alignContent"),
+        itemId: document.getElementById("itemId"),
+        rowStart: document.getElementById("rowStart"),
+        columnStart: document.getElementById("columnStart"),
+        rowEnd: document.getElementById("rowEnd"),
+        columnEnd: document.getElementById("columnEnd"),
+        justifySelf: document.getElementById("justifySelf"),
+        alignSelf: document.getElementById("alignSelf"),
+      };
+
+      let selectedIndex = 0;
+      let items = createItems(4);
+
+      function createItems(count) {
+        return Array.from({ length: count }, (_, index) => ({
+          id: "item" + (index + 1),
+          rowStart: "auto",
+          columnStart: "auto",
+          rowEnd: "auto",
+          columnEnd: "auto",
+          justifySelf: "stretch",
+          alignSelf: "stretch",
+        }));
+      }
+
+      function clampInput(input) {
+        const minimum = Number(input.min || 0);
+        const maximum = Number(input.max || Infinity);
+        const value = Math.min(
+          maximum,
+          Math.max(minimum, Number(input.value) || minimum),
+        );
+        input.value = value;
+        return value;
+      }
+
+      function renderItemPicker() {
+        itemPicker.innerHTML = "";
+        items.forEach((item, index) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = index + 1;
+          button.className = index === selectedIndex ? "selected" : "";
+          button.addEventListener("click", () => selectItem(index));
+          itemPicker.appendChild(button);
+        });
+      }
+
+      function selectItem(index) {
+        selectedIndex = index;
+        const item = items[index];
+        controls.itemId.value = item.id;
+        controls.rowStart.value = item.rowStart === "auto" ? "" : item.rowStart;
+        controls.columnStart.value =
+          item.columnStart === "auto" ? "" : item.columnStart;
+        controls.rowEnd.value = item.rowEnd === "auto" ? "" : item.rowEnd;
+        controls.columnEnd.value =
+          item.columnEnd === "auto" ? "" : item.columnEnd;
+        controls.justifySelf.value = item.justifySelf;
+        controls.alignSelf.value = item.alignSelf;
+        renderItemPicker();
+        render();
+      }
+
+      function readSelectedItem() {
+        const item = items[selectedIndex];
+        item.id = controls.itemId.value.trim() || "item" + (selectedIndex + 1);
+        item.rowStart = controls.rowStart.value || "auto";
+        item.columnStart = controls.columnStart.value || "auto";
+        item.rowEnd = controls.rowEnd.value || "auto";
+        item.columnEnd = controls.columnEnd.value || "auto";
+        item.justifySelf = controls.justifySelf.value;
+        item.alignSelf = controls.alignSelf.value;
+      }
+
+      function render() {
+        readSelectedItem();
+        const rows = clampInput(controls.rows);
+        const columns = clampInput(controls.columns);
+        const rowGap = clampInput(controls.rowGap);
+        const columnGap = clampInput(controls.columnGap);
+        const rowTracks =
+          controls.rowTracks.value.trim() || `repeat(${rows}, 1fr)`;
+        const columnTracks =
+          controls.columnTracks.value.trim() || `repeat(${columns}, 1fr)`;
+
+        grid.style.gridTemplateRows = rowTracks;
+        grid.style.gridTemplateColumns = columnTracks;
+        grid.style.rowGap = rowGap + "px";
+        grid.style.columnGap = columnGap + "px";
+        grid.style.justifyItems = controls.justifyItems.value;
+        grid.style.alignItems = controls.alignItems.value;
+        grid.style.justifyContent = controls.justifyContent.value;
+        grid.style.alignContent = controls.alignContent.value;
+        gridGuides.style.gridTemplateRows = rowTracks;
+        gridGuides.style.gridTemplateColumns = columnTracks;
+        gridGuides.style.rowGap = rowGap + "px";
+        gridGuides.style.columnGap = columnGap + "px";
+        gridGuides.innerHTML = "";
+        for (let index = 0; index < rows * columns; index += 1) {
+          const rowIndex = Math.floor(index / columns);
+          const columnIndex = index % columns;
+          const guideCell = document.createElement("span");
+          guideCell.className = "grid-guide-cell";
+          if (rowIndex === 0) {
+            const columnLineNumber = document.createElement("span");
+            columnLineNumber.className = "grid-line-number column-line-number";
+            columnLineNumber.textContent = columnIndex + 1;
+            guideCell.appendChild(columnLineNumber);
+          }
+          if (columnIndex === 0) {
+            const rowLineNumber = document.createElement("span");
+            rowLineNumber.className = "grid-line-number row-line-number";
+            rowLineNumber.textContent = rowIndex + 1;
+            guideCell.appendChild(rowLineNumber);
+          }
+          if (rowIndex === 0 && columnIndex === columns - 1) {
+            const columnEndLineNumber = document.createElement("span");
+            columnEndLineNumber.className =
+              "grid-line-number column-end-line-number";
+            columnEndLineNumber.textContent = columns + 1;
+            guideCell.appendChild(columnEndLineNumber);
+          }
+          if (rowIndex === rows - 1 && columnIndex === 0) {
+            const rowEndLineNumber = document.createElement("span");
+            rowEndLineNumber.className = "grid-line-number row-end-line-number";
+            rowEndLineNumber.textContent = rows + 1;
+            guideCell.appendChild(rowEndLineNumber);
+          }
+          gridGuides.appendChild(guideCell);
+        }
+
+        grid.innerHTML = "";
+        items.forEach((item, index) => {
+          const element = document.createElement("div");
+          element.className =
+            "grid-item" + (index === selectedIndex ? " selected" : "");
+          element.draggable = true;
+          element.textContent = item.id;
+          element.title = "Select " + item.id;
+          element.setAttribute("aria-label", `${item.id}. Drag to reposition`);
+          element.style.gridRow = `${item.rowStart} / ${item.rowEnd}`;
+          element.style.gridColumn = `${item.columnStart} / ${item.columnEnd}`;
+          element.style.justifySelf = item.justifySelf;
+          element.style.alignSelf = item.alignSelf;
+          element.addEventListener("click", () => selectItem(index));
+          element.addEventListener("dragstart", (event) => {
+            event.dataTransfer.effectAllowed = "move";
+            event.dataTransfer.setData("text/plain", String(index));
+            element.classList.add("dragging");
+            grid.classList.add("drag-over");
+          });
+          element.addEventListener("dragend", () => {
+            element.classList.remove("dragging");
+            grid.classList.remove("drag-over");
+          });
+          grid.appendChild(element);
+        });
+
+        cssOutput.textContent = `.grid-container {\n  display: grid;\n  grid-template-rows: ${rowTracks};\n  grid-template-columns: ${columnTracks};\n  row-gap: ${rowGap}px;\n  column-gap: ${columnGap}px;\n  justify-items: ${controls.justifyItems.value};\n  align-items: ${controls.alignItems.value};\n  justify-content: ${controls.justifyContent.value};\n  align-content: ${controls.alignContent.value};\n}\n\n.${items[selectedIndex].id} {\n  grid-row: ${items[selectedIndex].rowStart} / ${items[selectedIndex].rowEnd};\n  grid-column: ${items[selectedIndex].columnStart} / ${items[selectedIndex].columnEnd};\n  justify-self: ${items[selectedIndex].justifySelf};\n  align-self: ${items[selectedIndex].alignSelf};\n}`;
+      }
+
+      Object.values(controls).forEach((control) =>
+        control.addEventListener("input", render),
+      );
+      Object.values(controls).forEach((control) =>
+        control.addEventListener("change", render),
+      );
+
+      grid.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+      });
+
+      grid.addEventListener("drop", (event) => {
+        event.preventDefault();
+        const itemIndex = Number(event.dataTransfer.getData("text/plain"));
+        const rows = clampInput(controls.rows);
+        const columns = clampInput(controls.columns);
+        const bounds = grid.getBoundingClientRect();
+        const usableX = Math.max(
+          0,
+          Math.min(bounds.width - 1, event.clientX - bounds.left),
+        );
+        const usableY = Math.max(
+          0,
+          Math.min(bounds.height - 1, event.clientY - bounds.top),
+        );
+        const column = Math.min(
+          columns,
+          Math.floor((usableX / bounds.width) * columns) + 1,
+        );
+        const row = Math.min(
+          rows,
+          Math.floor((usableY / bounds.height) * rows) + 1,
+        );
+
+        if (!Number.isInteger(itemIndex) || !items[itemIndex]) return;
+        selectedIndex = itemIndex;
+        items[itemIndex].rowStart = String(row);
+        items[itemIndex].rowEnd = String(row + 1);
+        items[itemIndex].columnStart = String(column);
+        items[itemIndex].columnEnd = String(column + 1);
+        selectItem(itemIndex);
+      });
+
+      document.getElementById("addItemButton").addEventListener("click", () => {
+        readSelectedItem();
+        items.push({
+          id: "item" + (items.length + 1),
+          rowStart: "auto",
+          columnStart: "auto",
+          rowEnd: "auto",
+          columnEnd: "auto",
+          justifySelf: "stretch",
+          alignSelf: "stretch",
+        });
+        selectedIndex = items.length - 1;
+        renderItemPicker();
+        selectItem(selectedIndex);
+      });
+
+      document
+        .getElementById("removeItemButton")
+        .addEventListener("click", () => {
+          if (items.length <= 1) return;
+          items.splice(selectedIndex, 1);
+          selectedIndex = Math.min(selectedIndex, items.length - 1);
+          renderItemPicker();
+          selectItem(selectedIndex);
+        });
+
+      document.getElementById("resetButton").addEventListener("click", () => {
+        controls.rows.value = 2;
+        controls.columns.value = 4;
+        controls.rowGap.value = 12;
+        controls.columnGap.value = 12;
+        controls.rowTracks.value = "1fr 1fr";
+        controls.columnTracks.value = "1fr 1fr 1fr 1fr";
+        controls.justifyItems.value = "stretch";
+        controls.alignItems.value = "stretch";
+        controls.justifyContent.value = "start";
+        controls.alignContent.value = "start";
+        items = createItems(4);
+        selectedIndex = 0;
+        renderItemPicker();
+        selectItem(0);
+      });
+
+      document
+        .getElementById("copyButton")
+        .addEventListener("click", async (event) => {
+          try {
+            await navigator.clipboard.writeText(cssOutput.textContent);
+            event.currentTarget.textContent = "Copied";
+            setTimeout(
+              () => (event.currentTarget.textContent = "Copy CSS"),
+              1200,
+            );
+          } catch (error) {
+            event.currentTarget.textContent = "Copy failed";
+          }
+        });
+
+      renderItemPicker();
+      selectItem(0);
+    </script>
+  </body>
+</html>
