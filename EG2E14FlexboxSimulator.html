@@ -1,0 +1,1745 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Flexbox Simulator</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --panel: #f8f9fb;
+      --line: #e8edf5;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --soft-blue: #eaf2ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding: 14px 28px;
+    }
+
+    .topbar-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .brand-logo {
+      width: 112px;
+      height: auto;
+      flex: 0 0 auto;
+      display: block;
+    }
+
+    .page {
+      max-width: 1240px;
+      margin: 20px auto 40px;
+      padding: 0 18px;
+    }
+
+    .card {
+      overflow: hidden;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(17, 24, 39, 0.04);
+    }
+
+    .card-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1,
+    h2    
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 0;
+      font-size: 1.15rem;
+    }
+
+    h2 {
+      font-size: 0.9rem;
+    }
+
+    .header-actions,
+    .button-row,
+    .input-group {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: max-content;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    button:hover {
+      border-color: #93c5fd;
+      background: var(--soft-blue);
+      color: var(--primary-dark);
+    }
+
+    button.primary {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+
+    button.primary:hover {
+      background: var(--primary-dark);
+      color: #fff;
+    }
+
+    .card-body {
+      padding: 18px;
+    }
+
+    .description {
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .Simulator {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(0, 3fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .preview-panel,
+    .controls-panel,
+    .code-panel {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .panel-heading {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .preview-area {
+      padding: 14px;
+    }    
+
+    .controls-panel {
+      grid-column: 1;
+      grid-row: 1;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+      padding: 14px;
+      position: sticky;
+      top: 18px;
+    }
+
+    .grid-legend {
+      margin: 0 0 14px;
+      padding: 8px 10px 9px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      color: var(--muted);
+      font-size: 0.68rem;
+      line-height: 1.4;
+    }
+
+    .grid-legend legend {
+      padding: 0 4px;
+      color: var(--text);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .grid-legend p {
+      margin: 3px 0 0;
+    }
+
+    .grid-legend strong {
+      color: var(--primary-dark);
+    }
+
+    .preview-panel {
+      grid-column: 2;
+      grid-row: 1;
+      position: sticky;
+      top: 18px;
+    }
+
+    .control-section {
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .control-section:last-child {
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border-bottom: 0;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 6px 8px;
+      background: #fff;
+      color: var(--text);
+      font-size: 0.78rem;
+    }
+    
+
+    .code-panel {
+      margin: 18px 14px 14px;
+    }
+
+    @media (max-width: 900px) {
+      .Simulator {
+        grid-template-columns: 1fr;
+      }
+
+      .controls-panel,
+      .preview-panel {
+        grid-column: auto;
+        grid-row: auto;
+        max-height: none;
+        overflow: visible;
+        position: static;
+      }
+
+      .card-header {
+        grid-template-columns: 1fr;
+      }
+
+      .header-actions {
+        grid-auto-flow: row;
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .header-actions button {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar {
+        padding: 12px 14px;
+      }
+
+      .brand {
+        gap: 8px;
+        font-size: 0.78rem;
+      }
+
+      .brand-logo {
+        width: 88px;
+      }
+
+      .page {
+        margin-top: 10px;
+        padding: 0 10px;
+      }
+
+      .card-body {
+        padding: 12px;
+      }
+    }
+
+
+
+    /* migrated */
+    .prop-block {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 10px 8px;
+      margin-bottom: 10px;
+    }
+
+    .prop-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .prop-desc {
+      color: var(--muted);
+      font-size: 0.72rem;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .option-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 6px 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: 0.2s ease;
+      min-height: 58px;
+    }
+
+    .option-btn svg {
+      width: 34px;
+      height: 22px;
+      color: currentColor;
+      opacity: 0.9;
+      display: block;
+    }
+
+    .option-btn span {
+      display: block;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .option-btn.active {
+      background: var(--soft-blue);
+      border-color: #bfdbfe;
+      color: var(--primary-dark);
+      box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12);
+    }
+
+    .prop-block.disabled {
+      opacity: 0.55;
+    }
+
+    .prop-block.disabled .option-btn {
+      cursor: not-allowed;
+    }
+
+    .prop-block.disabled .option-btn.active {
+      background: #f3f4f6;
+      border-color: var(--line);
+      color: #6b7280;
+      box-shadow: none;
+    }
+
+    .basis-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .toggle-btn.active {
+      background: var(--soft-blue);
+      border-color: #bfdbfe;
+      color: var(--primary-dark);
+    }
+
+    .number-stepper {
+      display: flex;
+      align-items: center;
+      width: min(100%, 150px);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .step-btn {
+      width: 30px;
+      height: 32px;
+      border: none;
+      background: #f4f7fb;
+      color: var(--text);
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .step-btn:hover {
+      background: #edf3ff;
+    }
+
+    .step-btn:first-child {
+      border-right: 1px solid var(--line);
+    }
+
+    .step-btn:last-child {
+      border-left: 1px solid var(--line);
+    }
+
+    .step-input {
+      flex: 1;
+      height: 32px;
+      border: none;
+      background: transparent;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      appearance: textfield;
+      -webkit-appearance: textfield;
+    }
+
+    .step-input::-webkit-outer-spin-button,
+    .step-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .item-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .item-chip {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .item-chip.active {
+      background: var(--soft-blue);
+      border-color: #bfdbfe;
+      color: var(--primary-dark);
+    }
+
+    .slider-wrap {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 8px 10px;
+      margin-top: 6px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+      color: var(--text);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .slider-value {
+      min-width: 52px;
+      text-align: right;
+      color: var(--primary-dark);
+    }
+
+    .dimensions-block {
+      padding-bottom: 8px;
+    }
+
+    .dimension-row+.dimension-row {
+      border-top: 1px solid var(--line);
+      margin-top: 10px;
+      padding-top: 10px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .preview-stage {
+      min-height: 270px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #edf5ff, #f7fbff);
+      border: 1px solid #dfeafb;
+      padding: 16px;
+      display: block;
+      line-height: 1.5;
+    }
+
+    .preview-context {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .flex-container {
+      width: 100%;
+      min-height: 220px;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: stretch;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #dfeeff;
+      border: 2px dashed #7caafe;
+    }
+
+    .flex-container.inline-demo {
+      width: auto;
+      max-width: 100%;
+      vertical-align: middle;
+    }
+
+    .flex-item {
+      min-width: 90px;
+      height: 72px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, #2563eb, #60a5fa);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+      flex-grow: 1;
+      flex-shrink: 1;
+      flex-basis: auto;
+      order: 0;
+      align-self: auto;
+    }
+
+    .flex-item:nth-child(2) {
+      background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+    }
+
+    .flex-item:nth-child(3) {
+      background: linear-gradient(135deg, #10b981, #34d399);
+    }
+
+    .flex-item:nth-child(4) {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    }
+
+    .flex-item:nth-child(5) {
+      background: linear-gradient(135deg, #a855f7, #d946ef);
+    }
+
+    .code-box {
+      background: #101827;
+      color: #e5eeff;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      overflow: auto;
+    }
+
+    .cheatsheet {
+      /* margin-top: 18px; */
+      margin: 18px 14px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      overflow: hidden;
+    }
+
+    .cheatsheet-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #374151;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .cheatsheet-body {
+      padding: 12px 14px 14px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .cheat-item {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .cheat-item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.8rem;
+      color: var(--text);
+    }
+
+    .cheat-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.74rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img class="brand-logo" src="https://www.nyp.edu.sg/content/dam/nypcorp/sg/en/common/logo-nyp.svg"
+          alt="Nanyang Polytechnic" />
+        <span>EG2E14 - CSS Flexbox Simulator</span>
+      </div>
+      <!-- <div class="crumbs">
+        <span>Home</span>
+        <span>›</span>
+        <span>CSS Simulators</span>
+        <span>›</span>
+        <span>CSS Flexbox Simulator</span>
+      </div> -->
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="card">
+      <header class="card-header">
+        <h1>CSS Flexbox Simulator</h1>
+        <div class="header-actions">
+          <button type="button" id="addItemBtn">Add Item</button>
+          <button type="button" id="removeItemBtn">Remove Item</button>
+          <button type="button" id="resetBtn">Reset</button>
+          <button type="button" id="copyBtn">Copy CSS</button>
+        </div>
+      </header>
+
+      <div class="card-body">
+        <p class="description">
+          Create a Flexbox layout by changing direction, wrapping, gaps, alignment, and individual item placement.
+        </p>
+
+        <div class="Simulator">
+          <section class="preview-panel">
+            <div class="panel-heading">CSS Flexbox Options / Preview</div>
+            <div class="preview-area">
+              <div class="preview-stage">
+                <span class="preview-context">Content before</span>
+                <div class="flex-container" id="flexContainer">
+                  <div class="flex-item">1</div>
+                  <div class="flex-item">2</div>
+                  <div class="flex-item">3</div>
+                  <div class="flex-item">4</div>
+                  <div class="flex-item">5</div>
+                </div>
+                <span class="preview-context">Content after</span>
+              </div>
+            </div>
+            <section class="code-panel">
+              <div class="panel-heading">Generated CSS</div>
+              <!-- <pre id="cssOutput"></pre> -->
+              <div class="code-box" id="codeBox">
+                .container {<br />
+                display: flex;<br />
+                flex-direction: row;<br />
+                flex-wrap: nowrap;<br />
+                justify-content: flex-start;<br />
+                align-items: stretch;<br />
+                align-content: stretch;<br />
+                gap: 8px;<br />
+                }<br /><br />
+                .item {<br />
+                flex-grow: 0;<br />
+                flex-shrink: 0;<br />
+                flex-basis: auto;<br />
+                order: 0;<br />
+                align-self: auto;<br />
+                }<br />
+              </div>
+            </section>
+
+            <div class="cheatsheet">
+              <div class="cheatsheet-header">Quick Reference</div>
+              <div class="cheatsheet-body">
+                <div class="cheat-item">
+                  <strong>justify-content</strong>
+                  <span>Controls alignment on the main axis.</span>
+                </div>
+                <div class="cheat-item">
+                  <strong>align-items</strong>
+                  <span>Controls alignment on the cross axis.</span>
+                </div>
+                <div class="cheat-item">
+                  <strong>flex-wrap</strong>
+                  <span>Allows items to move onto the next line.</span>
+                </div>
+                <div class="cheat-item">
+                  <strong>gap</strong>
+                  <span>Adds space between rows and columns.</span>
+                </div>
+                <div class="cheat-item">
+                  <strong>flex-grow</strong>
+                  <span>Lets an item expand to fill available space.</span>
+                </div>
+                <div class="cheat-item">
+                  <strong>order</strong>
+                  <span>Changes the visual order of items.</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <aside class="controls-panel">
+            <fieldset class="grid-legend">
+              <legend>Flexbox Axis Reference</legend>
+              <p>
+                <strong>X axis</strong> = horizontal &nbsp;|&nbsp;
+                <strong>Y axis</strong> = vertical
+              </p>
+              <p>
+                <strong>row:</strong> X is the main axis, Y is the cross axis
+              </p>
+              <p>
+                <strong>column:</strong> Y is the main axis, X is the cross
+                axis
+              </p>
+            </fieldset>
+
+            <div class="control-section">
+              <h2>Container Properties</h2>
+              <div class="prop-block">
+                <div class="prop-name">display</div>
+                <div class="prop-desc">
+                  Sets the element as a flex container.
+                </div>
+                <div class="option-grid">
+                  <button class="option-btn active" type="button" data-prop="display" data-value="flex">
+                    flex
+                  </button>
+                  <button class="option-btn" type="button" data-prop="display" data-value="inline-flex">
+                    inline-flex
+                  </button>
+                </div>
+              </div>
+
+              <div class="prop-block">
+                <div class="prop-name">flex-direction</div>
+                <div class="prop-desc">Sets the main axis direction.</div>
+                <div class="option-grid">
+                  <button class="option-btn active" type="button" data-prop="flex-direction" data-value="row">
+                    row
+                  </button>
+                  <button class="option-btn" type="button" data-prop="flex-direction" data-value="row-reverse">
+                    row-reverse
+                  </button>
+                  <button class="option-btn" type="button" data-prop="flex-direction" data-value="column">
+                    column
+                  </button>
+                  <button class="option-btn" type="button" data-prop="flex-direction" data-value="column-reverse">
+                    column-reverse
+                  </button>
+                </div>
+              </div>
+
+              <div class="prop-block">
+                <div class="prop-name">flex-wrap</div>
+                <div class="prop-desc">
+                  Wraps items when they no longer fit.
+                </div>
+                <div class="option-grid">
+                  <button class="option-btn active" type="button" data-prop="flex-wrap" data-value="nowrap">
+                    nowrap
+                  </button>
+                  <button class="option-btn" type="button" data-prop="flex-wrap" data-value="wrap">
+                    wrap
+                  </button>
+                  <button class="option-btn" type="button" data-prop="flex-wrap" data-value="wrap-reverse">
+                    wrap-reverse
+                  </button>
+                </div>
+              </div>
+
+              <div class="prop-block">
+                <div class="prop-name">justify-content</div>
+                <div class="prop-desc">Aligns items along the main axis.</div>
+                <div class="option-grid">
+                  <button class="option-btn active" type="button" data-prop="justify-content" data-value="flex-start">
+                    flex-start
+                  </button>
+                  <button class="option-btn" type="button" data-prop="justify-content" data-value="flex-end">
+                    flex-end
+                  </button>
+                  <button class="option-btn" type="button" data-prop="justify-content" data-value="center">
+                    center
+                  </button>
+                  <button class="option-btn" type="button" data-prop="justify-content" data-value="space-between">
+                    space-between
+                  </button>
+                  <button class="option-btn" type="button" data-prop="justify-content" data-value="space-around">
+                    space-around
+                  </button>
+                  <button class="option-btn" type="button" data-prop="justify-content" data-value="space-evenly">
+                    space-evenly
+                  </button>
+                </div>
+              </div>
+
+              <div class="prop-block">
+                <div class="prop-name">align-items</div>
+                <div class="prop-desc">Aligns items along the cross axis.</div>
+                <div class="option-grid">
+                  <button class="option-btn active" type="button" data-prop="align-items" data-value="stretch">
+                    stretch
+                  </button>
+                  <button class="option-btn" type="button" data-prop="align-items" data-value="flex-start">
+                    flex-start
+                  </button>
+                  <button class="option-btn" type="button" data-prop="align-items" data-value="flex-end">
+                    flex-end
+                  </button>
+                  <button class="option-btn" type="button" data-prop="align-items" data-value="center">
+                    center
+                  </button>
+                  <button class="option-btn" type="button" data-prop="align-items" data-value="baseline">
+                    baseline
+                  </button>
+                </div>
+              </div>
+
+              <div class="prop-block">
+                <div class="prop-name">align-content</div>
+                <div class="prop-desc">
+                  Aligns wrapped rows or columns. Available only when flex-wrap
+                  is wrap or wrap-reverse.
+                </div>
+                <div class="option-grid">
+                  <button class="option-btn active" type="button" data-prop="align-content" data-value="stretch">
+                    stretch
+                  </button>
+                  <button class="option-btn" type="button" data-prop="align-content" data-value="flex-start">
+                    flex-start
+                  </button>
+                  <button class="option-btn" type="button" data-prop="align-content" data-value="flex-end">
+                    flex-end
+                  </button>
+                  <button class="option-btn" type="button" data-prop="align-content" data-value="center">
+                    center
+                  </button>
+                  <button class="option-btn" type="button" data-prop="align-content" data-value="space-between">
+                    space-between
+                  </button>
+                  <button class="option-btn" type="button" data-prop="align-content" data-value="space-around">
+                    space-around
+                  </button>
+                </div>
+              </div>
+
+              <div class="prop-block">
+                <div class="prop-name">gap</div>
+                <div class="prop-desc">Adds space between items.</div>
+                <div class="slider-wrap">
+                  <div class="slider-row">
+                    <span>gap</span>
+                    <span class="slider-value" id="gapSliderValue">8px</span>
+                  </div>
+                  <input id="gapSlider" type="range" min="0" max="80" step="2" value="8" aria-label="Gap slider" />
+                </div>
+              </div>
+
+              <div class="panel-title">Item Properties</div>
+
+              <div class="prop-block">
+                <div class="prop-name">Selected item</div>
+                <div class="prop-desc">
+                  Click an item in the preview to edit its properties.
+                </div>
+                <div class="item-picker" id="itemPicker"></div>
+              </div>
+
+              <div class="prop-block">
+                <div class="prop-name">align-self</div>
+                <div class="prop-desc">
+                  Override the container's align-items for this specific item.
+                </div>
+                <div class="option-grid">
+                  <button class="option-btn active" type="button" data-prop="align-self" data-value="auto">
+                    auto
+                  </button>
+                  <button class="option-btn" type="button" data-prop="align-self" data-value="flex-start">
+                    flex-start
+                  </button>
+                  <button class="option-btn" type="button" data-prop="align-self" data-value="center">
+                    center
+                  </button>
+                  <button class="option-btn" type="button" data-prop="align-self" data-value="flex-end">
+                    flex-end
+                  </button>
+                  <button class="option-btn" type="button" data-prop="align-self" data-value="stretch">
+                    stretch
+                  </button>
+                </div>
+              </div>
+
+              <div class="prop-block">
+                <div class="prop-name">flex-grow</div>
+                <div class="prop-desc">
+                  How much this item grows relative to siblings when there's
+                  extra space. 0 = no growth.
+                </div>
+                <div class="number-stepper" data-prop="flex-grow">
+                  <button class="step-btn" type="button" data-action="decrease" aria-label="Decrease flex-grow">
+                    −
+                  </button>
+                  <input class="step-input" type="number" min="0" max="10" step="1" value="0" data-prop="flex-grow"
+                    data-default="0" aria-label="Flex grow value" />
+                  <button class="step-btn" type="button" data-action="increase" aria-label="Increase flex-grow">
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div class="prop-block">
+                <div class="prop-name">flex-shrink</div>
+                <div class="prop-desc">
+                  How much this item shrinks relative to siblings when space is
+                  tight. 1 = shrinks normally.
+                </div>
+                <div class="number-stepper" data-prop="flex-shrink">
+                  <button class="step-btn" type="button" data-action="decrease" aria-label="Decrease flex-shrink">
+                    −
+                  </button>
+                  <input class="step-input" type="number" min="0" max="10" step="1" value="1" data-prop="flex-shrink"
+                    data-default="1" aria-label="Flex shrink value" />
+                  <button class="step-btn" type="button" data-action="increase" aria-label="Increase flex-shrink">
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div class="prop-block">
+                <div class="prop-name">flex-basis</div>
+                <div class="prop-desc">
+                  The initial size before free space is distributed. Use Auto or
+                  set a specific px value.
+                </div>
+                <div class="basis-controls">
+                  <button class="toggle-btn active" type="button" data-basis-toggle="auto">
+                    Auto
+                  </button>
+                  <div class="number-stepper" data-prop="flex-basis">
+                    <button class="step-btn" type="button" data-action="decrease" aria-label="Decrease flex-basis">
+                      −
+                    </button>
+                    <input class="step-input" type="number" min="0" max="500" step="10" value="120"
+                      data-prop="flex-basis" data-default="120" aria-label="Flex basis value" />
+                    <button class="step-btn" type="button" data-action="increase" aria-label="Increase flex-basis">
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="prop-block">
+                <div class="prop-name">order</div>
+                <div class="prop-desc">
+                  Changes the visual order without altering the HTML source.
+                  Lower values appear first.
+                </div>
+                <div class="number-stepper" data-prop="order">
+                  <button class="step-btn" type="button" data-action="decrease" aria-label="Decrease order">
+                    −
+                  </button>
+                  <input class="step-input" type="number" min="-10" max="10" step="1" value="0" data-prop="order"
+                    data-default="0" aria-label="Order value" />
+                  <button class="step-btn" type="button" data-action="increase" aria-label="Increase order">
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div class="prop-block dimensions-block">
+                <div class="prop-name">width and height (px)</div>
+                <div class="prop-desc">
+                  Set the selected item's width and height, or use Auto to leave
+                  either dimension flexible.
+                </div>
+                <div class="dimension-row">
+                  <div class="prop-name">width (px)</div>
+                  <div class="basis-controls">
+                    <button class="toggle-btn active" type="button" data-dimension-toggle="width-auto">
+                      Auto
+                    </button>
+                    <div class="number-stepper" data-prop="width">
+                      <button class="step-btn" type="button" data-action="decrease" aria-label="Decrease width">
+                        −
+                      </button>
+                      <input class="step-input" type="number" min="0" max="500" step="10" value="120" data-prop="width"
+                        data-default="120" aria-label="Width value" />
+                      <button class="step-btn" type="button" data-action="increase" aria-label="Increase width">
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="dimension-row">
+                  <div class="prop-name">height (px)</div>
+                  <div class="basis-controls">
+                    <button class="toggle-btn active" type="button" data-dimension-toggle="height-auto">
+                      Auto
+                    </button>
+                    <div class="number-stepper" data-prop="height">
+                      <button class="step-btn" type="button" data-action="decrease" aria-label="Decrease height">
+                        −
+                      </button>
+                      <input class="step-input" type="number" min="0" max="500" step="10" value="100" data-prop="height"
+                        data-default="100" aria-label="Height value" />
+                      <button class="step-btn" type="button" data-action="increase" aria-label="Increase height">
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const container = document.getElementById("flexContainer");
+    const codeBox = document.getElementById("codeBox");
+    const copyBtn = document.getElementById("copyBtn");
+    const addItemBtn = document.getElementById("addItemBtn");
+    const removeItemBtn = document.getElementById("removeItemBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const itemPicker = document.getElementById("itemPicker");
+    const gapSlider = document.getElementById("gapSlider");
+    const gapSliderValue = document.getElementById("gapSliderValue");
+
+    let selectedItemIndex = 0;
+    let itemStates = [];
+
+    function createDefaultItemState() {
+      return {
+        flexGrow: 0,
+        flexShrink: 1,
+        flexBasis: "auto",
+        order: 0,
+        alignSelf: "auto",
+        width: "",
+        height: "",
+      };
+    }
+
+    function ensureItemState(index) {
+      if (!itemStates[index]) {
+        itemStates[index] = createDefaultItemState();
+      }
+      return itemStates[index];
+    }
+
+    function getSelectedItem() {
+      return (
+        Array.from(container.children)[selectedItemIndex] ||
+        container.firstElementChild
+      );
+    }
+
+    function selectItem(index) {
+      if (index < 0 || index >= container.children.length) return;
+      selectedItemIndex = index;
+      setControlsFromItemState(ensureItemState(index));
+      renderItemPicker();
+      updatePreview();
+    }
+
+    function renderItemPicker() {
+      itemPicker.innerHTML = "";
+      Array.from(container.children).forEach((item, index) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className =
+          "item-chip" + (index === selectedItemIndex ? " active" : "");
+        chip.textContent = "Item " + (index + 1);
+        chip.addEventListener("click", () => selectItem(index));
+        itemPicker.appendChild(chip);
+      });
+    }
+
+    function getBasisValue() {
+      const autoToggle = document.querySelector('[data-basis-toggle="auto"]');
+      if (autoToggle && autoToggle.classList.contains("active")) {
+        return "auto";
+      }
+      const input = document.querySelector(
+        '.step-input[data-prop="flex-basis"]',
+      );
+      const value = Number(input?.value || 0);
+      return `${value}px`;
+    }
+
+    function getDimensionValue(prop) {
+      const toggle = document.querySelector(
+        `[data-dimension-toggle="${prop}-auto"]`,
+      );
+      if (toggle && toggle.classList.contains("active")) {
+        return "";
+      }
+      const input = document.querySelector(
+        `.step-input[data-prop="${prop}"]`,
+      );
+      const value = Number(input?.value || 0);
+      return value > 0 ? `${value}px` : "";
+    }
+
+    function readItemControlsState() {
+      const grow =
+        Number(
+          document.querySelector('.step-input[data-prop="flex-grow"]').value,
+        ) || 0;
+      const shrink =
+        Number(
+          document.querySelector('.step-input[data-prop="flex-shrink"]')
+            .value,
+        ) || 1;
+      const basis = getBasisValue();
+      const orderInput = document.querySelector(
+        '.step-input[data-prop="order"]',
+      );
+      const order = Number(orderInput?.value || 0);
+      const selfValue =
+        document.querySelector('[data-prop="align-self"].active')?.dataset
+          .value || "auto";
+      const width = getDimensionValue("width");
+      const height = getDimensionValue("height");
+
+      return {
+        flexGrow: grow,
+        flexShrink: shrink,
+        flexBasis: basis,
+        order,
+        alignSelf: selfValue,
+        width,
+        height,
+      };
+    }
+
+    function setControlsFromItemState(state) {
+      const growInput = document.querySelector(
+        '.step-input[data-prop="flex-grow"]',
+      );
+      const shrinkInput = document.querySelector(
+        '.step-input[data-prop="flex-shrink"]',
+      );
+      const basisAutoBtn = document.querySelector(
+        '[data-basis-toggle="auto"]',
+      );
+      const basisInput = document.querySelector(
+        '.step-input[data-prop="flex-basis"]',
+      );
+      const orderInput = document.querySelector(
+        '.step-input[data-prop="order"]',
+      );
+      const alignButtons = document.querySelectorAll(
+        '[data-prop="align-self"]',
+      );
+      const widthAutoBtn = document.querySelector(
+        '[data-dimension-toggle="width-auto"]',
+      );
+      const widthInput = document.querySelector(
+        '.step-input[data-prop="width"]',
+      );
+      const heightAutoBtn = document.querySelector(
+        '[data-dimension-toggle="height-auto"]',
+      );
+      const heightInput = document.querySelector(
+        '.step-input[data-prop="height"]',
+      );
+
+      if (growInput) growInput.value = state.flexGrow;
+      if (shrinkInput) shrinkInput.value = state.flexShrink;
+
+      if (basisAutoBtn) {
+        const isAuto = state.flexBasis === "auto";
+        basisAutoBtn.classList.toggle("active", isAuto);
+      }
+      if (basisInput) {
+        const basisValue =
+          state.flexBasis === "auto"
+            ? basisInput.dataset.default || 120
+            : Number(String(state.flexBasis).replace(/px/, "")) ||
+            Number(basisInput.dataset.default || 120);
+        basisInput.value = basisValue;
+      }
+
+      if (orderInput) {
+        orderInput.value = state.order;
+      }
+
+      alignButtons.forEach((button) => {
+        button.classList.toggle(
+          "active",
+          button.dataset.value === state.alignSelf,
+        );
+      });
+
+      if (widthAutoBtn) {
+        const isAuto = !state.width;
+        widthAutoBtn.classList.toggle("active", isAuto);
+      }
+      if (widthInput) {
+        widthInput.value = state.width
+          ? Number(String(state.width).replace(/px/, "")) || 0
+          : 0;
+      }
+
+      if (heightAutoBtn) {
+        const isAuto = !state.height;
+        heightAutoBtn.classList.toggle("active", isAuto);
+      }
+      if (heightInput) {
+        heightInput.value = state.height
+          ? Number(String(state.height).replace(/px/, "")) || 0
+          : 0;
+      }
+    }
+
+    function applySelectedItemStyles(item) {
+      const state = ensureItemState(selectedItemIndex);
+      const currentState = readItemControlsState();
+      itemStates[selectedItemIndex] = { ...state, ...currentState };
+
+      item.style.flexGrow = String(currentState.flexGrow);
+      item.style.flexShrink = String(currentState.flexShrink);
+      item.style.flexBasis = currentState.flexBasis;
+      item.style.order = String(currentState.order);
+      item.style.alignSelf = currentState.alignSelf;
+      item.style.width = currentState.width;
+      item.style.height = currentState.height;
+    }
+
+    function resetControls() {
+      const defaults = {
+        display: "flex",
+        "flex-direction": "row",
+        "flex-wrap": "nowrap",
+        "justify-content": "flex-start",
+        "align-items": "stretch",
+        "align-content": "stretch",
+        gap: "8px",
+        "align-self": "auto",
+        order: "0",
+        width: "0",
+        height: "0",
+      };
+
+      document.querySelectorAll(".option-btn").forEach((button) => {
+        const prop = button.dataset.prop;
+        const defaultValue = defaults[prop];
+        button.classList.toggle(
+          "active",
+          button.dataset.value === defaultValue,
+        );
+      });
+
+      const basisAutoBtn = document.querySelector(
+        '[data-basis-toggle="auto"]',
+      );
+      const basisInput = document.querySelector(
+        '.step-input[data-prop="flex-basis"]',
+      );
+      if (basisAutoBtn) basisAutoBtn.classList.add("active");
+      if (basisInput) basisInput.value = basisInput.dataset.default || 120;
+
+      document
+        .querySelectorAll("[data-dimension-toggle]")
+        .forEach((btn) => btn.classList.add("active"));
+
+      document.querySelectorAll(".step-input[data-prop]").forEach((input) => {
+        const defaultValue = Number(input.dataset.default || input.min || 0);
+        input.value = defaultValue;
+      });
+
+      while (container.children.length > 5) {
+        container.removeChild(container.lastElementChild);
+      }
+
+      while (container.children.length < 5) {
+        const item = document.createElement("div");
+        item.className = "flex-item";
+        item.textContent = container.children.length + 1;
+        container.appendChild(item);
+      }
+
+      selectedItemIndex = 0;
+      itemStates = Array.from({ length: container.children.length }, () =>
+        createDefaultItemState(),
+      );
+      Array.from(container.children).forEach((item, index) => {
+        item.textContent = index + 1;
+        const state = ensureItemState(index);
+        item.style.flexGrow = String(state.flexGrow);
+        item.style.flexShrink = String(state.flexShrink);
+        item.style.flexBasis = state.flexBasis;
+        item.style.order = String(state.order);
+        item.style.alignSelf = state.alignSelf;
+        item.style.width = state.width;
+        item.style.height = state.height;
+      });
+
+      renderItemPicker();
+      updatePreview();
+    }
+
+    function addItem() {
+      const item = document.createElement("div");
+      item.className = "flex-item";
+      item.textContent = container.children.length + 1;
+      container.appendChild(item);
+      selectedItemIndex = container.children.length - 1;
+      itemStates[selectedItemIndex] = createDefaultItemState();
+      setControlsFromItemState(itemStates[selectedItemIndex]);
+      applySelectedItemStyles(item);
+      renderItemPicker();
+      updatePreview();
+    }
+
+    function removeItem() {
+      if (container.children.length > 0) {
+        itemStates.splice(container.children.length - 1, 1);
+        container.removeChild(container.lastElementChild);
+        selectedItemIndex = Math.max(0, container.children.length - 1);
+        renderItemPicker();
+        setControlsFromItemState(ensureItemState(selectedItemIndex));
+        updatePreview();
+      }
+    }
+
+    function updatePreview() {
+      const display =
+        document.querySelector('[data-prop="display"].active')?.dataset
+          .value || "flex";
+      const direction =
+        document.querySelector('[data-prop="flex-direction"].active')?.dataset
+          .value || "row";
+      const wrap =
+        document.querySelector('[data-prop="flex-wrap"].active')?.dataset
+          .value || "nowrap";
+      const justify =
+        document.querySelector('[data-prop="justify-content"].active')
+          ?.dataset.value || "flex-start";
+      const align =
+        document.querySelector('[data-prop="align-items"].active')?.dataset
+          .value || "stretch";
+      const alignContent =
+        document.querySelector('[data-prop="align-content"].active')?.dataset
+          .value || "stretch";
+      const gap = gapSlider.value + "px";
+      const growInput = document.querySelector(
+        '.step-input[data-prop="flex-grow"]',
+      );
+      const shrinkInput = document.querySelector(
+        '.step-input[data-prop="flex-shrink"]',
+      );
+      const grow = Number(growInput?.value || 0);
+      const shrink = Number(shrinkInput?.value || 1);
+      const basis = getBasisValue();
+      const orderInput = document.querySelector(
+        '.step-input[data-prop="order"]',
+      );
+      const order = Number(orderInput?.value || 0);
+      const selfValue =
+        document.querySelector('[data-prop="align-self"].active')?.dataset
+          .value || "auto";
+      const width = getDimensionValue("width");
+      const height = getDimensionValue("height");
+      const alignContentEnabled = wrap === "wrap" || wrap === "wrap-reverse";
+      const alignContentBlock = document
+        .querySelector('[data-prop="align-content"]')
+        ?.closest(".prop-block");
+
+      document
+        .querySelectorAll('[data-prop="align-content"]')
+        .forEach((button) => {
+          button.disabled = !alignContentEnabled;
+        });
+      alignContentBlock?.classList.toggle("disabled", !alignContentEnabled);
+
+      gapSliderValue.textContent = gap;
+
+      container.style.display = display;
+      container.style.flexDirection = direction;
+      container.style.flexWrap = wrap;
+      container.style.justifyContent = justify;
+      container.style.alignItems = align;
+      container.style.alignContent = alignContent;
+      container.style.gap = gap;
+      container.classList.toggle("inline-demo", display === "inline-flex");
+
+      Array.from(container.children).forEach((item, index) => {
+        const state = ensureItemState(index);
+        if (index === selectedItemIndex) {
+          const currentState = readItemControlsState();
+          itemStates[index] = { ...state, ...currentState };
+          item.style.flexGrow = String(currentState.flexGrow);
+          item.style.flexShrink = String(currentState.flexShrink);
+          item.style.flexBasis = currentState.flexBasis;
+          item.style.order = String(currentState.order);
+          item.style.alignSelf = currentState.alignSelf;
+          item.style.width = currentState.width;
+          item.style.height = currentState.height;
+        } else {
+          item.style.flexGrow = String(state.flexGrow);
+          item.style.flexShrink = String(state.flexShrink);
+          item.style.flexBasis = state.flexBasis;
+          item.style.order = String(state.order);
+          item.style.alignSelf = state.alignSelf;
+          item.style.width = state.width;
+          item.style.height = state.height;
+        }
+      });
+
+      codeBox.innerHTML =
+        `.container {<br>` +
+        `  display: ${display};<br>` +
+        `  flex-direction: ${direction};<br>` +
+        `  flex-wrap: ${wrap};<br>` +
+        `  justify-content: ${justify};<br>` +
+        `  align-items: ${align};<br>` +
+        `  align-content: ${alignContent};<br>` +
+        `  gap: ${gap};<br>` +
+        `}<br><br>` +
+        `.item {<br>` +
+        `  flex-grow: ${grow};<br>` +
+        `  flex-shrink: ${shrink};<br>` +
+        `  flex-basis: ${basis};<br>` +
+        `  order: ${order};<br>` +
+        `  align-self: ${selfValue};<br>` +
+        `  width: ${width || "auto"};<br>` +
+        `  height: ${height || "auto"};<br>` +
+        `}`;
+    }
+
+    function getOptionSvg(prop, value) {
+      const commonBase =
+        '<svg viewBox="0 0 42 26" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">';
+      const end = "</svg>";
+
+      const iconMap = {
+        display: {
+          flex: `${commonBase}<rect x="2.5" y="3" width="37" height="19" rx="3" stroke="currentColor" stroke-width="1.5" opacity="0.5"/><rect x="5" y="7" width="8" height="11" rx="2" fill="currentColor"/><rect x="17" y="7" width="8" height="11" rx="2" fill="currentColor" opacity="0.7"/><rect x="29" y="7" width="8" height="11" rx="2" fill="currentColor" opacity="0.4"/>${end}`,
+          "inline-flex": `${commonBase}<rect x="2.5" y="3" width="37" height="19" rx="3" stroke="currentColor" stroke-width="1.5" opacity="0.5"/><rect x="6" y="7" width="7" height="11" rx="2" fill="currentColor"/><rect x="15" y="7" width="7" height="11" rx="2" fill="currentColor" opacity="0.7"/><rect x="24" y="7" width="7" height="11" rx="2" fill="currentColor" opacity="0.4"/>${end}`,
+        },
+        "flex-direction": {
+          row: `${commonBase}<rect x="4" y="6" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="14" y="6" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="24" y="6" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.45"/><path d="M8 20L8 17M8 17L6 19M8 17L10 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>${end}`,
+          "row-reverse": `${commonBase}<rect x="4" y="13" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="14" y="13" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="24" y="13" width="7" height="7" rx="1.5" fill="currentColor"/><path d="M34 20L34 17M34 17L32 19M34 17L36 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>${end}`,
+          column: `${commonBase}<rect x="7" y="5" width="7" height="5" rx="1.5" fill="currentColor"/><rect x="7" y="12" width="7" height="5" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="7" y="19" width="7" height="5" rx="1.5" fill="currentColor" opacity="0.45"/><path d="M18 8L21 8M21 8L19 6M21 8L19 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>${end}`,
+          "column-reverse": `${commonBase}<rect x="28" y="5" width="7" height="5" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="28" y="12" width="7" height="5" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="28" y="19" width="7" height="5" rx="1.5" fill="currentColor"/><path d="M18 18L21 18M21 18L19 16M21 18L19 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>${end}`,
+        },
+        "flex-wrap": {
+          nowrap: `${commonBase}<rect x="4" y="5" width="9" height="7" rx="1.5" fill="currentColor"/><rect x="15" y="5" width="9" height="7" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="26" y="5" width="9" height="7" rx="1.5" fill="currentColor" opacity="0.4"/><path d="M4 18H38" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>${end}`,
+          wrap: `${commonBase}<rect x="5" y="5" width="11" height="7" rx="1.5" fill="currentColor"/><rect x="18" y="5" width="11" height="7" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="9" y="14" width="11" height="7" rx="1.5" fill="currentColor" opacity="0.4"/><rect x="22" y="14" width="11" height="7" rx="1.5" fill="currentColor" opacity="0.2"/>${end}`,
+          "wrap-reverse": `${commonBase}<rect x="9" y="5" width="11" height="7" rx="1.5" fill="currentColor" opacity="0.2"/><rect x="22" y="5" width="11" height="7" rx="1.5" fill="currentColor" opacity="0.4"/><rect x="5" y="14" width="11" height="7" rx="1.5" fill="currentColor"/><rect x="18" y="14" width="11" height="7" rx="1.5" fill="currentColor" opacity="0.7"/>${end}`,
+        },
+        "justify-content": {
+          "flex-start": `${commonBase}<rect x="3" y="7" width="6" height="11" rx="1.5" fill="currentColor"/><rect x="12" y="7" width="6" height="11" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="21" y="7" width="6" height="11" rx="1.5" fill="currentColor" opacity="0.4"/><rect x="30" y="7" width="6" height="11" rx="1.5" fill="currentColor" opacity="0.2"/>${end}`,
+          "flex-end": `${commonBase}<rect x="11" y="7" width="6" height="11" rx="1.5" fill="currentColor" opacity="0.2"/><rect x="20" y="7" width="6" height="11" rx="1.5" fill="currentColor" opacity="0.4"/><rect x="29" y="7" width="6" height="11" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="3" y="7" width="6" height="11" rx="1.5" fill="currentColor"/>${end}`,
+          center: `${commonBase}<rect x="8" y="7" width="6" height="11" rx="1.5" fill="currentColor" opacity="0.4"/><rect x="15" y="7" width="6" height="11" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="22" y="7" width="6" height="11" rx="1.5" fill="currentColor"/><rect x="29" y="7" width="6" height="11" rx="1.5" fill="currentColor" opacity="0.4"/>${end}`,
+          "space-between": `${commonBase}<rect x="3" y="7" width="6" height="11" rx="1.5" fill="currentColor"/><rect x="18" y="7" width="6" height="11" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="33" y="7" width="6" height="11" rx="1.5" fill="currentColor" opacity="0.45"/><path d="M15 13H27" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>${end}`,
+          "space-around": `${commonBase}<rect x="4" y="7" width="5" height="11" rx="1.5" fill="currentColor"/><rect x="14" y="7" width="5" height="11" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="24" y="7" width="5" height="11" rx="1.5" fill="currentColor" opacity="0.5"/><rect x="34" y="7" width="5" height="11" rx="1.5" fill="currentColor" opacity="0.3"/><path d="M11 13H15M21 13H25M31 13H35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>${end}`,
+          "space-evenly": `${commonBase}<rect x="4" y="7" width="5" height="11" rx="1.5" fill="currentColor"/><rect x="12" y="7" width="5" height="11" rx="1.5" fill="currentColor" opacity="0.8"/><rect x="20" y="7" width="5" height="11" rx="1.5" fill="currentColor" opacity="0.6"/><rect x="28" y="7" width="5" height="11" rx="1.5" fill="currentColor" opacity="0.5"/><rect x="36" y="7" width="5" height="11" rx="1.5" fill="currentColor" opacity="0.3"/>${end}`,
+        },
+        "align-items": {
+          stretch: `${commonBase}<rect x="4" y="5" width="7" height="16" rx="1.5" fill="currentColor"/><rect x="14" y="5" width="7" height="16" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="24" y="5" width="7" height="16" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          "flex-start": `${commonBase}<rect x="4" y="5" width="7" height="8" rx="1.5" fill="currentColor"/><rect x="14" y="5" width="7" height="8" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="24" y="5" width="7" height="8" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          "flex-end": `${commonBase}<rect x="4" y="13" width="7" height="8" rx="1.5" fill="currentColor"/><rect x="14" y="13" width="7" height="8" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="24" y="13" width="7" height="8" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          center: `${commonBase}<rect x="4" y="9" width="7" height="8" rx="1.5" fill="currentColor"/><rect x="14" y="9" width="7" height="8" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="24" y="9" width="7" height="8" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          baseline: `${commonBase}<rect x="4" y="10" width="7" height="10" rx="1.5" fill="currentColor"/><rect x="14" y="8" width="7" height="12" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="24" y="11" width="7" height="9" rx="1.5" fill="currentColor" opacity="0.45"/><path d="M4 7H38" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>${end}`,
+        },
+        "align-content": {
+          stretch: `${commonBase}<rect x="4" y="4" width="11" height="6" rx="1.5" fill="currentColor"/><rect x="18" y="4" width="11" height="6" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="7" y="13" width="11" height="6" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="21" y="13" width="11" height="6" rx="1.5" fill="currentColor" opacity="0.2"/>${end}`,
+          "flex-start": `${commonBase}<rect x="4" y="4" width="11" height="6" rx="1.5" fill="currentColor"/><rect x="18" y="4" width="11" height="6" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="7" y="15" width="11" height="6" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="21" y="15" width="11" height="6" rx="1.5" fill="currentColor" opacity="0.2"/>${end}`,
+          "flex-end": `${commonBase}<rect x="4" y="15" width="11" height="6" rx="1.5" fill="currentColor" opacity="0.2"/><rect x="18" y="15" width="11" height="6" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="7" y="4" width="11" height="6" rx="1.5" fill="currentColor"/><rect x="21" y="4" width="11" height="6" rx="1.5" fill="currentColor" opacity="0.7"/>${end}`,
+          center: `${commonBase}<rect x="7" y="7" width="11" height="6" rx="1.5" fill="currentColor" opacity="0.4"/><rect x="21" y="7" width="11" height="6" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="4" y="15" width="11" height="6" rx="1.5" fill="currentColor"/><rect x="18" y="15" width="11" height="6" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          "space-between": `${commonBase}<rect x="4" y="4" width="10" height="6" rx="1.5" fill="currentColor"/><rect x="18" y="4" width="10" height="6" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="8" y="15" width="10" height="6" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="22" y="15" width="10" height="6" rx="1.5" fill="currentColor" opacity="0.2"/><path d="M15 7H27M15 18H27" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>${end}`,
+          "space-around": `${commonBase}<rect x="4" y="4" width="8" height="6" rx="1.5" fill="currentColor"/><rect x="18" y="4" width="8" height="6" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="10" y="15" width="8" height="6" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="24" y="15" width="8" height="6" rx="1.5" fill="currentColor" opacity="0.2"/><path d="M13 7H17M21 7H25M15 18H19M23 18H27" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>${end}`,
+        },
+        gap: {
+          "8px": `${commonBase}<rect x="4" y="6" width="8" height="6" rx="1.5" fill="currentColor"/><rect x="17" y="6" width="8" height="6" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="30" y="6" width="8" height="6" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="4" y="15" width="8" height="6" rx="1.5" fill="currentColor" opacity="0.3"/><rect x="17" y="15" width="8" height="6" rx="1.5" fill="currentColor" opacity="0.2"/><path d="M13 6V19M26 6V19" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/>${end}`,
+          "16px": `${commonBase}<rect x="4" y="6" width="8" height="6" rx="1.5" fill="currentColor"/><rect x="18" y="6" width="8" height="6" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="32" y="6" width="8" height="6" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="4" y="15" width="8" height="6" rx="1.5" fill="currentColor" opacity="0.3"/><rect x="18" y="15" width="8" height="6" rx="1.5" fill="currentColor" opacity="0.2"/><path d="M14 6V19M28 6V19" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/>${end}`,
+          "24px": `${commonBase}<rect x="4" y="6" width="7" height="6" rx="1.5" fill="currentColor"/><rect x="17" y="6" width="7" height="6" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="30" y="6" width="7" height="6" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="4" y="15" width="7" height="6" rx="1.5" fill="currentColor" opacity="0.3"/><rect x="17" y="15" width="7" height="6" rx="1.5" fill="currentColor" opacity="0.2"/><path d="M13 6V19M25 6V19" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/>${end}`,
+          "40px": `${commonBase}<rect x="4" y="5" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="18" y="5" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="32" y="5" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="4" y="15" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.3"/><rect x="18" y="15" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.2"/><path d="M12 5V20M26 5V20" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/>${end}`,
+        },
+        "align-self": {
+          auto: `${commonBase}<rect x="4" y="10" width="8" height="10" rx="1.5" fill="currentColor"/><rect x="17" y="5" width="8" height="15" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="30" y="10" width="8" height="10" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          "flex-start": `${commonBase}<rect x="4" y="5" width="8" height="8" rx="1.5" fill="currentColor"/><rect x="17" y="5" width="8" height="15" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="30" y="5" width="8" height="8" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          center: `${commonBase}<rect x="4" y="9" width="8" height="8" rx="1.5" fill="currentColor"/><rect x="17" y="5" width="8" height="15" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="30" y="9" width="8" height="8" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          "flex-end": `${commonBase}<rect x="4" y="13" width="8" height="8" rx="1.5" fill="currentColor"/><rect x="17" y="5" width="8" height="15" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="30" y="13" width="8" height="8" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          stretch: `${commonBase}<rect x="4" y="5" width="8" height="16" rx="1.5" fill="currentColor"/><rect x="17" y="5" width="8" height="16" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="30" y="5" width="8" height="16" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+        },
+        "flex-grow": {
+          0: `${commonBase}<rect x="3" y="8" width="7" height="10" rx="1.5" fill="currentColor"/><rect x="16" y="8" width="7" height="10" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="29" y="8" width="7" height="10" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          1: `${commonBase}<rect x="3" y="8" width="9" height="10" rx="1.5" fill="currentColor"/><rect x="17" y="8" width="7" height="10" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="28" y="8" width="7" height="10" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          2: `${commonBase}<rect x="3" y="8" width="11" height="10" rx="1.5" fill="currentColor"/><rect x="18" y="8" width="8" height="10" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="30" y="8" width="8" height="10" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          3: `${commonBase}<rect x="3" y="8" width="13" height="10" rx="1.5" fill="currentColor"/><rect x="19" y="8" width="9" height="10" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="31" y="8" width="6" height="10" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+        },
+        "flex-shrink": {
+          0: `${commonBase}<rect x="4" y="8" width="9" height="9" rx="1.5" fill="currentColor"/><rect x="17" y="8" width="9" height="9" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="30" y="8" width="9" height="9" rx="1.5" fill="currentColor" opacity="0.45"/><path d="M8 20L34 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>${end}`,
+          1: `${commonBase}<rect x="4" y="8" width="8" height="9" rx="1.5" fill="currentColor"/><rect x="17" y="8" width="8" height="9" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="30" y="8" width="8" height="9" rx="1.5" fill="currentColor" opacity="0.45"/><path d="M8 20L34 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>${end}`,
+          2: `${commonBase}<rect x="4" y="8" width="7" height="9" rx="1.5" fill="currentColor"/><rect x="16" y="8" width="7" height="9" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="28" y="8" width="7" height="9" rx="1.5" fill="currentColor" opacity="0.45"/><path d="M8 20L34 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>${end}`,
+        },
+        "flex-basis": {
+          auto: `${commonBase}<rect x="4" y="8" width="12" height="9" rx="1.5" fill="currentColor"/><rect x="20" y="8" width="6" height="9" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="30" y="8" width="6" height="9" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          "100px": `${commonBase}<rect x="4" y="8" width="10" height="9" rx="1.5" fill="currentColor"/><rect x="18" y="8" width="8" height="9" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="30" y="8" width="5" height="9" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          "150px": `${commonBase}<rect x="4" y="8" width="12" height="9" rx="1.5" fill="currentColor"/><rect x="20" y="8" width="10" height="9" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="34" y="8" width="4" height="9" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          "200px": `${commonBase}<rect x="4" y="8" width="16" height="9" rx="1.5" fill="currentColor"/><rect x="23" y="8" width="8" height="9" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="34" y="8" width="4" height="9" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+        },
+        order: {
+          0: `${commonBase}<rect x="5" y="8" width="7" height="9" rx="1.5" fill="currentColor"/><rect x="16" y="8" width="7" height="9" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="27" y="8" width="7" height="9" rx="1.5" fill="currentColor" opacity="0.45"/>${end}`,
+          1: `${commonBase}<rect x="5" y="8" width="7" height="9" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="16" y="8" width="7" height="9" rx="1.5" fill="currentColor"/><rect x="27" y="8" width="7" height="9" rx="1.5" fill="currentColor" opacity="0.7"/>${end}`,
+          "-1": `${commonBase}<rect x="5" y="8" width="7" height="9" rx="1.5" fill="currentColor"/><rect x="16" y="8" width="7" height="9" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="27" y="8" width="7" height="9" rx="1.5" fill="currentColor" opacity="0.7"/>${end}`,
+          2: `${commonBase}<rect x="5" y="8" width="7" height="9" rx="1.5" fill="currentColor" opacity="0.45"/><rect x="16" y="8" width="7" height="9" rx="1.5" fill="currentColor" opacity="0.7"/><rect x="27" y="8" width="7" height="9" rx="1.5" fill="currentColor"/>${end}`,
+        },
+        width: {
+          0: `${commonBase}<rect x="4" y="10" width="13" height="6" rx="1.5" fill="currentColor"/><rect x="23" y="10" width="13" height="6" rx="1.5" fill="currentColor" opacity="0.6"/>${end}`,
+          "80px": `${commonBase}<rect x="4" y="10" width="8" height="6" rx="1.5" fill="currentColor"/><rect x="18" y="10" width="15" height="6" rx="1.5" fill="currentColor" opacity="0.6"/>${end}`,
+          "120px": `${commonBase}<rect x="4" y="10" width="12" height="6" rx="1.5" fill="currentColor"/><rect x="22" y="10" width="15" height="6" rx="1.5" fill="currentColor" opacity="0.6"/>${end}`,
+          "160px": `${commonBase}<rect x="4" y="10" width="16" height="6" rx="1.5" fill="currentColor"/><rect x="26" y="10" width="12" height="6" rx="1.5" fill="currentColor" opacity="0.6"/>${end}`,
+          "200px": `${commonBase}<rect x="4" y="10" width="19" height="6" rx="1.5" fill="currentColor"/><rect x="28" y="10" width="10" height="6" rx="1.5" fill="currentColor" opacity="0.6"/>${end}`,
+        },
+        height: {
+          0: `${commonBase}<rect x="8" y="5" width="8" height="15" rx="1.5" fill="currentColor"/><rect x="23" y="5" width="8" height="15" rx="1.5" fill="currentColor" opacity="0.6"/>${end}`,
+          "60px": `${commonBase}<rect x="8" y="11" width="8" height="9" rx="1.5" fill="currentColor"/><rect x="23" y="11" width="8" height="9" rx="1.5" fill="currentColor" opacity="0.6"/>${end}`,
+          "80px": `${commonBase}<rect x="8" y="8" width="8" height="12" rx="1.5" fill="currentColor"/><rect x="23" y="8" width="8" height="12" rx="1.5" fill="currentColor" opacity="0.6"/>${end}`,
+          "100px": `${commonBase}<rect x="8" y="5" width="8" height="16" rx="1.5" fill="currentColor"/><rect x="23" y="5" width="8" height="16" rx="1.5" fill="currentColor" opacity="0.6"/>${end}`,
+          "140px": `${commonBase}<rect x="8" y="4" width="8" height="18" rx="1.5" fill="currentColor"/><rect x="23" y="4" width="8" height="18" rx="1.5" fill="currentColor" opacity="0.6"/>${end}`,
+        },
+      };
+
+      return (
+        iconMap[prop]?.[value] ||
+        `${commonBase}<rect x="6" y="7" width="30" height="12" rx="2" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>${end}`
+      );
+    }
+
+    document.querySelectorAll(".option-btn").forEach((button) => {
+      const prop = button.dataset.prop;
+      const value = button.dataset.value;
+      const label = button.textContent.trim();
+      button.innerHTML = `${getOptionSvg(prop, value)}<span>${label}</span>`;
+      button.addEventListener("click", () => {
+        const group = button.dataset.prop;
+        document
+          .querySelectorAll('[data-prop="' + group + '"]')
+          .forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+        updatePreview();
+      });
+    });
+
+    document.querySelectorAll(".step-input[data-prop]").forEach((input) => {
+      const stepper = input.closest(".number-stepper");
+      const min = Number(input.min) || 0;
+      const max = Number(input.max) || 10;
+      const step = Number(input.step) || 1;
+
+      input.addEventListener("input", () => {
+        let value = Number(input.value);
+        if (Number.isNaN(value)) value = Number(input.dataset.default || min);
+        value = Math.min(max, Math.max(min, value));
+        input.value = value;
+        if (input.dataset.prop === "flex-basis") {
+          document
+            .querySelector('[data-basis-toggle="auto"]')
+            .classList.remove("active");
+        }
+        if (input.dataset.prop === "width") {
+          document
+            .querySelector('[data-dimension-toggle="width-auto"]')
+            .classList.remove("active");
+        }
+        if (input.dataset.prop === "height") {
+          document
+            .querySelector('[data-dimension-toggle="height-auto"]')
+            .classList.remove("active");
+        }
+        updatePreview();
+      });
+
+      stepper?.querySelectorAll(".step-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          const change = button.dataset.action === "increase" ? 1 : -1;
+          let value =
+            Number(input.value) || Number(input.dataset.default || min);
+          value = Math.min(max, Math.max(min, value + change * step));
+          input.value = value;
+          if (input.dataset.prop === "flex-basis") {
+            document
+              .querySelector('[data-basis-toggle="auto"]')
+              .classList.remove("active");
+          }
+          if (input.dataset.prop === "width") {
+            document
+              .querySelector('[data-dimension-toggle="width-auto"]')
+              .classList.remove("active");
+          }
+          if (input.dataset.prop === "height") {
+            document
+              .querySelector('[data-dimension-toggle="height-auto"]')
+              .classList.remove("active");
+          }
+          updatePreview();
+        });
+      });
+    });
+
+    document.querySelectorAll("[data-basis-toggle]").forEach((button) => {
+      button.addEventListener("click", () => {
+        document
+          .querySelectorAll("[data-basis-toggle]")
+          .forEach((btn) => btn.classList.toggle("active", btn === button));
+        if (button.dataset.basisToggle === "auto") {
+          const basisInput = document.querySelector(
+            '.step-input[data-prop="flex-basis"]',
+          );
+          if (basisInput)
+            basisInput.value = basisInput.dataset.default || 120;
+        }
+        updatePreview();
+      });
+    });
+
+    document.querySelectorAll("[data-dimension-toggle]").forEach((button) => {
+      button.addEventListener("click", () => {
+        document
+          .querySelectorAll("[data-dimension-toggle]")
+          .forEach((btn) => btn.classList.toggle("active", btn === button));
+        const prop = button.dataset.dimensionToggle.replace("-auto", "");
+        const input = document.querySelector(
+          `.step-input[data-prop="${prop}"]`,
+        );
+        if (button.dataset.dimensionToggle.endsWith("-auto") && input) {
+          input.value = input.dataset.default || 0;
+        }
+        updatePreview();
+      });
+    });
+
+    container.addEventListener("click", (event) => {
+      const clickedItem = event.target.closest(".flex-item");
+      if (!clickedItem) return;
+      const index = Array.from(container.children).indexOf(clickedItem);
+      if (index >= 0) {
+        selectItem(index);
+      }
+    });
+
+    gapSlider.addEventListener("input", () => {
+      gapSliderValue.textContent = gapSlider.value + "px";
+      updatePreview();
+    });
+
+    addItemBtn.addEventListener("click", addItem);
+    removeItemBtn.addEventListener("click", removeItem);
+    resetBtn.addEventListener("click", resetControls);
+
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(
+          codeBox.innerText.replace(/\n\s*\n/g, "\n"),
+        );
+        copyBtn.textContent = "Copied";
+        setTimeout(() => (copyBtn.textContent = "Copy CSS"), 1200);
+      } catch (error) {
+        copyBtn.textContent = "Copy failed";
+      }
+    });
+
+    Array.from(container.children).forEach((_, index) =>
+      ensureItemState(index),
+    );
+    renderItemPicker();
+    setControlsFromItemState(ensureItemState(selectedItemIndex));
+    updatePreview();
+  </script>
+</body>
+</html>
