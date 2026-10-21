@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Accessible Screen Reader Demo</title>
+  <style>
+    /* Exact same styling as the broken demo */
+    body { font-family: sans-serif; margin: 20px; line-height: 1.6; }
+    header { border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 20px; }
+    .nav-links { list-style: none; padding: 0; display: flex; gap: 15px; }
+    main { background: #f9f9f9; padding: 20px; border-radius: 5px; }
+    footer { margin-top: 40px; font-size: 0.8rem; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <!-- FIXED: Explicitly announces the website branding banner -->
+  <header>
+    <h1>TechPoly Student Portal</h1>
+    
+    <!-- FIXED: Creates a "Navigation" landmark that users can jump to or skip -->
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#modules">Modules</a></li>
+        <li><a href="#grades">Grades</a></li>
+        <li><a href="#contact">Contact Support</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- FIXED: Creates a "Main Content" landmark. The screen reader can jump straight here! -->
+  <main>
+    <h2>Welcome back, Student!</h2>
+    <p>Your upcoming assignment for Web Development 101 is due this Friday at 23:59. Please ensure your files are uploaded to the submission portal on time.</p>
+    <p>Make sure to review the grading criteria before submitting your final code repository.</p>
+  </main>
+
+  <!-- FIXED: Explicitly marks this as the secondary layout footer -->
+  <footer>
+    <p>&copy; 2026 TechPolytechnic. All Rights Reserved.</p>
+  </footer>
+
+</body>
+</html>

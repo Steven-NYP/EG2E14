@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Broken Screen Reader Demo</title>
+  <style>
+    /* Styling to make it look like a real website layout */
+    body { font-family: sans-serif; margin: 20px; line-height: 1.6; }
+    .header-zone { border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 20px; }
+    .nav-links { list-style: none; padding: 0; display: flex; gap: 15px; }
+    .content-zone { background: #f9f9f9; padding: 20px; border-radius: 5px; }
+    .footer-zone { margin-top: 40px; font-size: 0.8rem; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <!-- BROKEN: Just a generic section for the header -->
+  <div class="header-zone">
+    <h1>TechPoly Student Portal</h1>
+    
+    <!-- BROKEN: The screen reader just thinks this is a random bulleted list -->
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#modules">Modules</a></li>
+      <li><a href="#grades">Grades</a></li>
+      <li><a href="#contact">Contact Support</a></li>
+    </ul>
+  </div>
+
+  <!-- BROKEN: No landmarks indicating this is the core content -->
+  <div class="content-zone">
+    <h2>Welcome back, Student!</h2>
+    <p>Your upcoming assignment for Web Development 101 is due this Friday at 23:59. Please ensure your files are uploaded to the submission portal on time.</p>
+    <p>Make sure to review the grading criteria before submitting your final code repository.</p>
+  </div>
+
+  <!-- BROKEN: The screen reader treats this with the same weight as the main text -->
+  <div class="footer-zone">
+    <p>&copy; 2026 TechPolytechnic. All Rights Reserved.</p>
+  </div>
+
+</body>
+</html>
